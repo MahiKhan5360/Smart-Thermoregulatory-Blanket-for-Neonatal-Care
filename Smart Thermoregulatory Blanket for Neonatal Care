@@ -1,0 +1,220 @@
+# System Specification Development Proposal: Smart Thermoregulatory Blanket for Neonatal Care
+
+## 1. Introduction
+
+### Purpose
+
+This proposal outlines the development of a smart thermoregulatory blanket to maintain optimal body temperature (36.5–37.5°C) for premature infants, particularly in low-resource settings where incubators may be unavailable. The system monitors infant skin temperature, adjusts heating elements to maintain a safe range, and alerts caregivers via a display or mobile app if temperature deviates. This project is ideal for an embedded system course, as it requires designing a safety-critical, closed-loop control system with constrained hardware resources, low-power operation, and reliable sensor integration, challenging students to optimize performance and ensure infant safety.
+
+### Scope
+
+The system will include:
+
+- A soft blanket embedded with temperature sensors and heating elements.
+- A microcontroller for real-time temperature control and monitoring.
+- A display for local alerts and status.
+- A Bluetooth Low Energy (BLE) module for caregiver notifications.
+- A mobile application for remote monitoring and configuration. The project focuses on a functional prototype. Cloud integration, medical-grade certification (e.g., FDA), and advanced analytics are outside the scope.
+
+### Definitions, Acronyms, and Abbreviations
+
+- MCU: Microcontroller Unit
+- BLE: Bluetooth Low Energy
+- PID: Proportional-Integral-Derivative (control algorithm)
+- NTC: Negative Temperature Coefficient (thermistor)
+- GUI: Graphical User Interface
+- IoT: Internet of Things
+
+## 2. System Overview
+
+### Goals
+
+- Maintain infant skin temperature within 36.5–37.5°C with ±0.2°C accuracy.
+- Continuously monitor temperature and detect unsafe deviations.
+- Adjust heating elements in real-time to stabilize temperature.
+- Provide local and remote alerts to caregivers for critical events (e.g., hypothermia, overheating).
+- Log temperature data for clinician review.
+
+### Stakeholders
+
+- Neonatologists: Monitor infant health and adjust care plans.
+- Nurses/Caregivers: Respond to alerts and maintain the system.
+- Biomedical engineers: Design and support the system.
+- Infants: Primary beneficiaries (non-interacting users).
+
+### Assumptions
+
+- The system operates in indoor environments (15–35°C, &lt;80% humidity).
+- Caregivers have access to BLE-enabled smartphones or tablets.
+- The blanket is used with infants weighing 1–3 kg, typical for preterm neonates.
+- Caregivers are trained in basic system operation (e.g., charging, app use).
+
+## 3. System Architecture
+
+### System Components
+
+- **Temperature Sensors**: NTC thermistors (4–6 units) embedded in the blanket for skin temperature monitoring.
+- **Heating Elements**: Flexible, low-voltage heating pads (e.g., Kapton-based) for controlled warming.
+- **Microcontroller**: Low-power MCU (e.g., STM32L4 series) for PID control and data processing.
+- **Bluetooth Module**: BLE module for wireless communication.
+- **Display**: 0.96-inch OLED display for local temperature and alerts.
+- **Power Management**: Rechargeable lithium-ion battery (3.7V, 2000 mAh) or solar panel (5V, 2W) with USB charging.
+
+### External Interfaces
+
+- **User Interface**: OLED display for temperature, status, and alerts; buttons for power and mode selection.
+- **Wireless Interface**: BLE communication with mobile app using GATT profile.
+- **Charging Interface**: USB-C for battery charging or solar input.
+
+### High-Level Architecture Diagram
+
+(Placeholder: Temperature Sensors → Signal Conditioning → MCU → PID Controller → Heating Elements; MCU → OLED Display; MCU → BLE Module → Mobile App)\
+The MCU reads sensor data, applies a PID algorithm to control heating elements, displays status locally, and transmits alerts/data to the mobile app via BLE.
+
+## 4. Functional Requirements
+
+### Use Cases
+
+- The caregiver wraps the infant in the blanket and powers on the system.
+- The system continuously monitors skin temperature and adjusts heating to maintain 36.5–37.5°C.
+- If temperature falls below 36.3°C or exceeds 37.7°C, the system triggers local (display/buzzer) and remote (app) alerts.
+- The caregiver views real-time temperature and historical trends via the app.
+- The neonatologist reviews logged data to assess thermal stability.
+
+### Functional Specifications
+
+- Temperature measurement range: 30–40°C with ±0.2°C accuracy.
+- Sampling rate: 1 Hz (once per second).
+- Heating response time: Adjusts temperature within 60 seconds of deviation.
+- Alert threshold: Configurable via app (default: &lt;36.3°C or &gt;37.7°C).
+- Data transmission: Temperature updates sent to app every 5 seconds during alerts, otherwise every 60 seconds.
+
+## 5. Non-Functional Requirements
+
+- **Performance**: Control loop latency &lt;100 ms for heating adjustments.
+- **Power Consumption**: Battery life ≥24 hours with continuous operation; solar mode supports ≥8 hours in low-light conditions.
+- **Safety**: Heating elements limited to 40°C maximum to prevent burns; fail-safe shutdown on MCU failure.
+- **Usability**: Intuitive app interface; blanket weight &lt;500 g, washable outer layer.
+- **Reliability**: Sensor accuracy maintained for ≥6 months; heating elements withstand ≥10,000 cycles.
+- **Size**: Blanket dimensions \~50 cm x 30 cm, control unit &lt;10 cm x 5 cm x 2 cm.
+
+## 6. Data Specifications
+
+### Data Model
+
+- Temperature reading: Floating-point value (°C, 2 decimal places).
+- Timestamp: ISO 8601 format.
+- Alert event: Binary (normal/critical), with temperature and time.
+- Device ID, sensor ID.
+
+### Data Management
+
+- MCU buffers 1 hour of temperature data (3600 samples at 1 Hz) in 4 KB SRAM.
+- Mobile app stores 7 days of data (\~600 KB).
+- No server-side storage in the prototype; future iterations may include cloud logging.
+
+## 7. Technical Specifications
+
+### Hardware Requirements
+
+- **Sensors**: 4–6 NTC thermistors (10 kΩ, ±0.1°C accuracy).
+- **Heating Elements**: Kapton heating pads (5V, 10W total).
+- **MCU**: ARM Cortex-M4-based MCU (e.g., STM32L432KC) with ADC and PWM support.
+- **BLE Module**: Bluetooth 5.0 compliant (e.g., integrated in STM32WB series).
+- **Battery**: Lithium-ion battery (3.7V, 2000 mAh) or solar panel (5V, 2W).
+- **Display**: 0.96-inch OLED (128x64 pixels).
+
+### Software Requirements
+
+- **Firmware**: Embedded C with FreeRTOS for task scheduling and PID control.
+- **Mobile App**: Native Android/iOS development (Kotlin/Swift).
+- **Communication Protocol**: BLE GATT profile for event-driven data transfer.
+
+### Development Environment
+
+- **IDE**: STM32CubeIDE (free, course-compatible).
+- **Programming Languages**: C for firmware, Kotlin/Swift for app.
+- **Debugging**: SWD/JTAG interface for hardware debugging.
+
+## 8. Validation and Testing
+
+### Test Procedures
+
+- **Sensor Accuracy**: Calibrate thermistors against a reference thermometer (±0.1°C).
+- **Heating Control**: Test PID response using a thermal mannequin (1–3 kg).
+- **Wireless Reliability**: Measure BLE packet delivery over 10 meters.
+- **Battery/Solar Life**: Monitor power consumption over 24 hours (battery) and 8 hours (solar).
+- **Usability Testing**: Conduct trials with 5–10 volunteers to assess app and display clarity.
+
+### Acceptance Criteria
+
+- Temperature accuracy: ±0.2°C across 30–40°C.
+- Heating response: Stabilizes temperature within 60 seconds of ±0.5°C deviation.
+- BLE reliability: ≥98% packet delivery at 10 meters.
+- Usability: System Usability Scale (SUS) score ≥80/100.
+- Safety: No heating above 40°C in fault conditions.
+
+## 9. Maintenance and Support
+
+### Documentation
+
+- User manual for caregivers.
+- Developer guide for firmware and app maintenance.
+- Calibration procedures for thermistors.
+
+### Maintenance Plan
+
+- Firmware updates via BLE over-the-air (OTA) programming.
+- Thermistor recalibration every 6 months, based on &lt;1% drift per year.
+- App updates for OS compatibility and bug fixes.
+- Caregiver feedback collected via app to inform improvements.
+
+## 10. Risk Assessment
+
+### Risk Identification
+
+- Sensor drift or failure, leading to inaccurate temperature readings.
+- Heating element malfunction, causing under- or overheating.
+- BLE interference, disrupting caregiver alerts.
+- Battery overheating or solar panel underperformance.
+- User error (e.g., improper blanket placement).
+
+### Mitigation Strategies
+
+- Implement sensor self-calibration at startup.
+- Use redundant thermistors and fail-safe PWM limits.
+- Employ error correction in BLE communication.
+- Design thermal protection for battery; test solar panel in low-light conditions.
+- Provide clear user instructions and app-guided setup.
+
+## 11. Relevant Biomedical Engineering Principles
+
+- **Thermoregulation**: Understanding neonatal thermal needs to maintain core temperature.
+- **Control Systems**: PID algorithm design for precise heating control.
+- **Sensor Technology**: Accurate temperature measurement with NTC thermistors.
+- **Safety Engineering**: Fail-safe mechanisms to prevent burns or hypothermia.
+- **Ergonomics**: Soft, lightweight blanket design for infant comfort and caregiver ease.
+
+## 12. Uniqueness and Innovation
+
+This project addresses neonatal hypothermia, a major cause of mortality in low-resource settings, affecting 10–20% of preterm infants. Innovations include:
+
+- **Solar-Powered Option**: Enables use in areas with limited electricity.
+- **Flexible Heating**: Kapton pads ensure uniform heating and washability.
+- **Low-Cost Design**: Targets &lt; $50 component cost, enhancing accessibility. Future iterations could include predictive temperature modeling, but these are deferred to maintain prototype feasibility.
+
+## 13. Timeline and Milestones
+
+- **Week 1-2**: Component selection, schematic design.
+- **Week 3-4**: Firmware development for PID control and sensor integration.
+- **Week 5-6**: Mobile app development and BLE integration.
+- **Week 7**: System integration and thermal testing.
+- **Week 8**: Usability testing, validation, and documentation.
+
+## 14. Cost Feasibility
+
+The prototype targets a component cost of &lt; $50, using affordable parts (e.g., STM32 MCU \~$5, NTC thermistors \~$1 each, Kapton heaters \~$10, solar panel \~$5). Open-source tools (STM32CubeIDE) ensure no additional software costs, aligning with course budgets.
+
+## 15. Conclusion
+
+The smart thermoregulatory blanket offers a life-saving solution for preterm infants by maintaining optimal body temperature in low-resource settings. By integrating embedded system design, biomedical engineering principles, and user-centered design, this project provides a practical and impactful prototype while offering students hands-on experience in closed-loop control, low-power design, and safety-critical systems. It has the potential to reduce neonatal mortality and improve care in underserved regions.
