@@ -218,3 +218,13 @@ The prototype targets a component cost of &lt; $50, using affordable parts (e.g.
 ## 15. Conclusion
 
 The smart thermoregulatory blanket offers a life-saving solution for preterm infants by maintaining optimal body temperature in low-resource settings. By integrating embedded system design, biomedical engineering principles, and user-centered design, this project provides a practical and impactful prototype while offering students hands-on experience in closed-loop control, low-power design, and safety-critical systems. It has the potential to reduce neonatal mortality and improve care in underserved regions.
+
+16. References
+IEEE 830-1998, Recommended Practice for Software Requirements Specifications.
+
+World Health Organization, Thermal Protection of the Newborn: A Practical Guide, 1997.
+
+IEC 60601-1, Medical Electrical Equipment – Part 1: General Requirements for Basic Safety and Essential Performance.
+
+Liu, L., et al., "Global, regional, and national causes of child mortality in 2000–13," The Lancet, 2015
+
