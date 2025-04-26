@@ -5,7 +5,7 @@ Hardware:
 
 Kapton heating pads (5V, 10W) for uniform warming.
 
-STM32L4 MCU (ARM Cortex-M4) for PID control.
+.
 
 BLE module (Bluetooth 5.0) for wireless communication.
 
